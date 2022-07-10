@@ -7,8 +7,10 @@ app = Flask(__name__)
 # open weather API key
 api_key = "a7d7eb5bf1ec72f321958ed911cbd1da"
 
-def get_weather(city_name):
-    url = f"http://api.openweathermap.org/data/2.5/weather?q={city_name}&units=imperial&appid={api_key}"
+def get_weather(city):
+    # reference https://openweathermap.org/current#name
+    # note: lookup by city name will be deprecated soon. Look into geocoding API
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&units=imperial&appid={api_key}"
     # return response, json method to convert json data to python format data
     response = requests.get(url).json()
     return response
@@ -20,13 +22,14 @@ def index():
     if request.method == "POST":
         city = request.form.get("city")
         r = get_weather(city)
-        weather_data = {
+        # dict of select weather data
+        weather = {
             'city' : r['name'],
             'temperature' : r['main']['temp'],
             'description' : r['weather'][0]['description'],
-            'icon' : r['weather'][0]['icon'],
+            'icon' : r['weather'][0]['icon']
         }
-        return weather_data
+        return render_template('weather.html', weather = weather)
 
 @app.route('/about')
 def about():

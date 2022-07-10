@@ -5,22 +5,27 @@
     <meta charset="UTF-8">
     <!-- Set the viewport so site displays well on mobile too --> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Lookup</title>
+    <title>Weather Result</title>
 </head>
 
 <body>
     <h1>
-        What's the weather like?
+        Weather Result
     </h1>
     <div class="topnav">
         <a class="active" href="/">Home</a> |
         <a href="/about">About</a> |
         <a href="/instructions">Instructions</a> 
     </div>
-    <form method="POST">
-        <input class="input" name="city" type="text" placeholder="City Name">
-        <button> Submit </button>
-    </form>
+    <p>
+        City: {{ weather.city }}
+        <br>
+        Temp: {{ weather.temperature }} °F
+        <br>
+        Description: {{ weather.description }}
+        <br>
+        <img src="http://openweathermap.org/img/wn/{{ weather.icon }}.png" alt="icon">
+    </p>
 </body>
 
 </html>
