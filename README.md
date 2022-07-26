@@ -5,7 +5,7 @@ Version 1.1
 # Random Wiki Microservice
 
 How to Request Data
-- Write "run" to random_wiki_service.txt file
+- Write "run" to random_wiki_service.txt file. Overwrite any exisitng text. 
 
 How to Receive Data
-- Read contents of random_wiki_service.txt file
+- Read text contents of random_wiki_service.txt file for random wiki summary.
