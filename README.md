@@ -3,6 +3,7 @@ For OSU CS 361
 Version 1.1
 
 # Random Wiki Microservice
+Download random_wiki_srv.py and random_wiki_service.txt files in your project folder. Run the py file locally. 
 
 How to Request Data
 - Write "run" to random_wiki_service.txt file. Overwrite any existing text. 
