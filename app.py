@@ -26,6 +26,7 @@ def index():
             # dict of select weather data
             weather = {
                 'city' : r['name'],
+                'country' : r['sys']['country'],
                 'temperature' : r['main']['temp'],
                 'description' : r['weather'][0]['description'],
                 'icon' : r['weather'][0]['icon']
@@ -33,7 +34,7 @@ def index():
             return render_template('weather.html', weather = weather)
         if request.form.get("random_city"):
             r = requests.get("http://127.0.0.1:5001")
-            return r.text
+            return render_template('index.html', random_city=r.text)
 
 @app.route('/about')
 def about():
