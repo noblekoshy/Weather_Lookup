@@ -20,16 +20,20 @@ def index():
     if request.method == "GET":
         return render_template('index.html')
     if request.method == "POST":
-        city = request.form.get("city")
-        r = get_weather(city)
-        # dict of select weather data
-        weather = {
-            'city' : r['name'],
-            'temperature' : r['main']['temp'],
-            'description' : r['weather'][0]['description'],
-            'icon' : r['weather'][0]['icon']
-        }
-        return render_template('weather.html', weather = weather)
+        if request.form.get("city"):
+            city = request.form.get("city")
+            r = get_weather(city)
+            # dict of select weather data
+            weather = {
+                'city' : r['name'],
+                'temperature' : r['main']['temp'],
+                'description' : r['weather'][0]['description'],
+                'icon' : r['weather'][0]['icon']
+            }
+            return render_template('weather.html', weather = weather)
+        if request.form.get("random_city"):
+            r = requests.get("http://127.0.0.1:5001")
+            return r.text
 
 @app.route('/about')
 def about():
