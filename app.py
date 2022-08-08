@@ -1,7 +1,6 @@
 import string
-import json
 import requests
-from flask import Flask, request, redirect, render_template, url_for, flash, jsonify
+from flask import Flask, request, redirect, render_template, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -17,7 +16,6 @@ class City(db.Model):
 api_key = "a7d7eb5bf1ec72f321958ed911cbd1da"
 
 def get_weather_city(city):
-    # reference https://openweathermap.org/current#name
     url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&units=imperial&appid={api_key}"
     response = requests.get(url).json()
     return response
@@ -68,7 +66,6 @@ def index():
                 'icon' : r['weather'][0]['icon']
             }
             return redirect(url_for('index'))
-            #return render_template('weather.html', weather = weather)
         
 @app.route('/geolocation', methods = ["POST"])
 def geolocation():

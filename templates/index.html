@@ -49,9 +49,9 @@
     <form method="POST">
         <input type="submit" name="random_city" value="Random City">
     </form>
-    <br>
+    <p>Random City: press this button to automatically get the weather for a random city.</p>
     <button name="geolocation" onclick="geolocation()">Current City</button>
-    <p>Note: "Current City" option requires the app to access your location. Also requires refresh to view result.</p>
+    <p>Current City: press this button to automatically get the weather for your current location rather than typing the city name. Note, this features requires the app to access your geolocation and a page refresh to view the result.</p>
     <h2>Saved Cities:</h2>
     <p>
     {% for weather in weather_data %}
