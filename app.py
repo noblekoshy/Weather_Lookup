@@ -1,42 +1,59 @@
+from crypt import methods
+import json
 import requests
 from flask import Flask, request, redirect, render_template, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///weather.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'thisisasecret'
+db = SQLAlchemy(app)
 
-# open weather API key
+class City(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50),nullable=False)
+
 api_key = "a7d7eb5bf1ec72f321958ed911cbd1da"
 
 def get_weather_city(city):
     # reference https://openweathermap.org/current#name
-    # note: lookup by city name will be deprecated soon. Look into geocoding API
     url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&units=imperial&appid={api_key}"
-    # return response, json method to convert json data to python format data
     response = requests.get(url).json()
     return response
 
 def get_weather_coord(lat, lon):
     url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&units=imperial&appid={api_key}"
-    # return response, json method to convert json data to python format data
     response = requests.get(url).json()
     return response
 
 def reverse_geocoding(lat, lon):
     url = f"http://api.openweathermap.org/geo/1.0/reverse?lat={lat}&lon={lon}&limit={1}&appid={api_key}"
-    # return response, json method to convert json data to python format data (list)
     response = requests.get(url).json()
     return response
 
 @app.route('/', methods = ["POST", "GET"])
 def index():
     if request.method == "GET":
-        return render_template('index.html')
-        
+        cities = City.query.all()
+        weather_data = []
+        for city in cities:
+            print(city.name)
+            r = get_weather_city(city.name)
+            weather = {
+                'city' : r['name'],
+                'country' : r['sys']['country'],
+                'temperature' : r['main']['temp'],
+                'description' : r['weather'][0]['description'],
+                'icon' : r['weather'][0]['icon']
+            }
+            weather_data.append(weather)
+        return render_template('index.html', weather_data = weather_data)
+
     if request.method == "POST":
         if request.form.get("city"):
             city = request.form.get("city")
             r = get_weather_city(city)
-            # dict of select weather data
             weather = {
                 'city' : r['name'],
                 'country' : r['sys']['country'],
@@ -48,16 +65,20 @@ def index():
 
         if request.form.get("random_city"):
             r = requests.get("http://127.0.0.1:5001")
-            return render_template('index.html', city=r.text)
+            city = r.text
+            return render_template('index.html', city = city)
         
-        if request.get_json():
-            geo_data = request.get_json()
-            lat = geo_data['location']['lat']
-            lon = geo_data['location']['lng']
-            r = get_weather_coord(lat, lon)
-            print(r)
-            # TODO data is printing successfully but not displaying on client
-            return render_template('index.html')
+@app.route('/geolocation', methods = ["POST"])
+def geolocation():
+    if request.method == "POST":
+        geo_data = request.get_json()
+        lat = geo_data['location']['lat']
+        lon = geo_data['location']['lng']
+        r = reverse_geocoding(lat, lon)
+        city = r[0]['name']
+        print("Your current city:")
+        print(city)
+        return render_template('index.html', city = city)
 
 @app.route('/about')
 def about():

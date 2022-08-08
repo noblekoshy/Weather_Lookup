@@ -3,15 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <!-- Set the viewport so site displays well on mobile too --> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Lookup</title>
-    <!--jquery-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script>
         function geolocation() {
             var pos = {}
-            // Try HTML5 geolocation.
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                 pos = {
@@ -21,21 +18,15 @@
     
                 $.ajax({
                     type: "POST",
-                    url: "/",
+                    url: "{{ url_for('geolocation') }}",
                     contentType: "application/json",
                     data: JSON.stringify({location: pos}),
                     dataType: "json",
-                    success: function(response) {
-                        console.log(response);
-                    },
-                    error: function(err) {
-                        console.log(err);
-                    }
                 });
     
                 });
             } else {
-                alert("Please enable HTML geolocation and use device that supports it");
+                alert("Error: ensure geolocation is enabled for your browser/device");
             }
         }
     </script>
@@ -54,19 +45,28 @@
         <input class="input" name="city" type="text" value="{{city}}">
         <button> Submit </button>
     </form>
+    <br>
     <form method="POST">
-        <input type="submit" name="random_city" value="Get Random City">
+        <input type="submit" name="random_city" value="Get Random City Name">
     </form>
-    
-    <button name="geolocation" onclick="geolocation()">Use Current Location</button>
-
-    <p>Note: "use current location" option requires the app to access your location</p>
-    <p>Saved Cities: </p>
-    <ul>
-        <li>Example 1 - Delete x</li> 
-        <li>Example 2 - Delete x</li> 
-    </ul>
-
+    <br>
+    <button name="geolocation" onclick="geolocation()">Get Current City Name</button>
+    <p>Note: "get current city name" option requires the app to access your location</p>
+    <h2>Saved Cities:</h2>
+    <p>
+    {% for weather in weather_data %}
+        City: {{ weather.city }}
+        <br>
+        Country: {{ weather.country }}
+        <br>
+        Temp: {{ weather.temperature }} °F
+        <br>
+        Description: {{ weather.description }}
+        <br>
+        <img src="http://openweathermap.org/img/wn/{{ weather.icon }}.png" alt="icon">
+        <br>
+    {% endfor %}
+    </p>
 </body>
 
 </html>
