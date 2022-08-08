@@ -22,11 +22,6 @@ def get_weather_city(city):
     response = requests.get(url).json()
     return response
 
-def get_weather_coord(lat, lon):
-    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&units=imperial&appid={api_key}"
-    response = requests.get(url).json()
-    return response
-
 def reverse_geocoding(lat, lon):
     url = f"http://api.openweathermap.org/geo/1.0/reverse?lat={lat}&lon={lon}&limit={1}&appid={api_key}"
     response = requests.get(url).json()
