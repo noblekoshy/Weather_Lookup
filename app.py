@@ -1,5 +1,5 @@
 import requests
-from flask import Flask, request, redirect, render_template, url_for, flash, abort, jsonify
+from flask import Flask, request, redirect, render_template, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -23,7 +23,7 @@ def get_weather_coord(lat, lon):
 
 def reverse_geocoding(lat, lon):
     url = f"http://api.openweathermap.org/geo/1.0/reverse?lat={lat}&lon={lon}&limit={1}&appid={api_key}"
-    # return response, json method to convert json data to python format data
+    # return response, json method to convert json data to python format data (list)
     response = requests.get(url).json()
     return response
 
@@ -31,6 +31,7 @@ def reverse_geocoding(lat, lon):
 def index():
     if request.method == "GET":
         return render_template('index.html')
+        
     if request.method == "POST":
         if request.form.get("city"):
             city = request.form.get("city")
@@ -47,7 +48,16 @@ def index():
 
         if request.form.get("random_city"):
             r = requests.get("http://127.0.0.1:5001")
-            return render_template('index.html', random_city=r.text)
+            return render_template('index.html', city=r.text)
+        
+        if request.get_json():
+            geo_data = request.get_json()
+            lat = geo_data['location']['lat']
+            lon = geo_data['location']['lng']
+            r = get_weather_coord(lat, lon)
+            print(r)
+            # TODO data is printing successfully but not displaying on client
+            return render_template('index.html')
 
 @app.route('/about')
 def about():
@@ -57,30 +67,6 @@ def about():
 def insturctions():
     return render_template('instructions.html')
 
-@app.route('/geo', methods= ['GET', 'POST'])
-def geo():
-    if request.method == "GET":
-        return render_template('geo.html')
-    if request.method == "POST":
-        geo_data = request.get_json()
-        #return jsonify(data)
-        if geo_data:
-            lat = geo_data['location']['lat']
-            lon = geo_data['location']['lng']
-            r = get_weather_coord(lat, lon)
-            # dict of select weather data
-            weather = {
-                'city' : r['name'],
-                'country' : r['sys']['country'],
-                'temperature' : r['main']['temp'],
-                'description' : r['weather'][0]['description'],
-                'icon' : r['weather'][0]['icon']
-            }
-            print(weather)
-            # TODO not displaying the weather page, due to POST on geo/ ? how does regular weather work? 
-            # TODO try just getting the city name by reverse geocoding, wouldnt work for Rosvile MN vs CA
-            return render_template('weather.html', weather = weather)
-    
 # Listener
 if __name__ == "__main__":
     app.run(debug=True)
