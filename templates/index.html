@@ -42,16 +42,16 @@
         <a href="/instructions">Instructions</a> 
     </div>
     <form method="POST">
-        <input class="input" name="city" type="text" value="{{city}}">
+        <input class="input" name="city" type="text" placeholder="City Name" value="{{city}}">
         <button> Submit </button>
     </form>
     <br>
     <form method="POST">
-        <input type="submit" name="random_city" value="Get Random City Name">
+        <input type="submit" name="random_city" value="Random City">
     </form>
     <br>
-    <button name="geolocation" onclick="geolocation()">Get Current City Name</button>
-    <p>Note: "get current city name" option requires the app to access your location</p>
+    <button name="geolocation" onclick="geolocation()">Current City</button>
+    <p>Note: "Current City" option requires the app to access your location. Also requires refresh to view result.</p>
     <h2>Saved Cities:</h2>
     <p>
     {% for weather in weather_data %}
@@ -64,6 +64,8 @@
         Description: {{ weather.description }}
         <br>
         <img src="http://openweathermap.org/img/wn/{{ weather.icon }}.png" alt="icon">
+        <br>
+        <a href="delete/{{ weather.city }}">Delete</a>
         <br>
     {% endfor %}
     </p>

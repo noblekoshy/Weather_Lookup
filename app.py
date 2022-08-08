@@ -1,4 +1,4 @@
-from crypt import methods
+import string
 import json
 import requests
 from flask import Flask, request, redirect, render_template, url_for, flash, jsonify
@@ -53,7 +53,18 @@ def index():
     if request.method == "POST":
         if request.form.get("city"):
             city = request.form.get("city")
+            city = city.lower()
+            city = string.capwords(city)
+
+        elif request.form.get("random_city"):
+            r = requests.get("http://127.0.0.1:5001")
+            city = r.text
+
+        if city:
             r = get_weather_city(city)
+            new_city_obj = City(name=city)
+            db.session.add(new_city_obj)
+            db.session.commit()
             weather = {
                 'city' : r['name'],
                 'country' : r['sys']['country'],
@@ -61,12 +72,8 @@ def index():
                 'description' : r['weather'][0]['description'],
                 'icon' : r['weather'][0]['icon']
             }
-            return render_template('weather.html', weather = weather)
-
-        if request.form.get("random_city"):
-            r = requests.get("http://127.0.0.1:5001")
-            city = r.text
-            return render_template('index.html', city = city)
+            return redirect(url_for('index'))
+            #return render_template('weather.html', weather = weather)
         
 @app.route('/geolocation', methods = ["POST"])
 def geolocation():
@@ -76,9 +83,20 @@ def geolocation():
         lon = geo_data['location']['lng']
         r = reverse_geocoding(lat, lon)
         city = r[0]['name']
-        print("Your current city:")
-        print(city)
-        return render_template('index.html', city = city)
+        if city:
+            new_city_obj = City(name=city)
+            db.session.add(new_city_obj)
+            db.session.commit()
+        return redirect(url_for('index'))
+
+@app.route('/delete/<name>')
+def delete_city(name):
+    city = City.query.filter_by(name=name).first()
+    db.session.delete(city)
+    db.session.commit()
+
+    return redirect(url_for('index'))
+
 
 @app.route('/about')
 def about():
