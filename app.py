@@ -58,13 +58,6 @@ def index():
             new_city_obj = City(name=city)
             db.session.add(new_city_obj)
             db.session.commit()
-            weather = {
-                'city' : r['name'],
-                'country' : r['sys']['country'],
-                'temperature' : r['main']['temp'],
-                'description' : r['weather'][0]['description'],
-                'icon' : r['weather'][0]['icon']
-            }
             return redirect(url_for('index'))
         
 @app.route('/geolocation', methods = ["POST"])
