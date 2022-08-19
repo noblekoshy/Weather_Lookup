@@ -64,8 +64,8 @@ def index():
 def geolocation():
     if request.method == "POST":
         geo_data = request.get_json()
-        lat = geo_data['location']['lat']
-        lon = geo_data['location']['lng']
+        lat = geo_data['lat']
+        lon = geo_data['lon']
         r = reverse_geocoding(lat, lon)
         city = r[0]['name']
         if city:

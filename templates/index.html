@@ -10,17 +10,17 @@
         function geolocation() {
             var pos = {}
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                pos = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-    
+                navigator.geolocation.getCurrentPosition(position => {
+
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                const data = {lat, lon};
+
                 $.ajax({
                     type: "POST",
                     url: "{{ url_for('geolocation') }}",
                     contentType: "application/json",
-                    data: JSON.stringify({location: pos}),
+                    data: JSON.stringify(data),
                     dataType: "json",
                 });
     
